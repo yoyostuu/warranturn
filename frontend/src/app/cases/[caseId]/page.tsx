@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { useStore } from "@/store"
+import { Case, ResolutionOption, Attempt, MonitoringEvent } from "@/types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
@@ -134,10 +135,12 @@ function ProcessingView() {
   )
 }
 
-function ApprovalView({ currentCase, onApprove }: { currentCase: any, onApprove: (id: string) => void }) {
-  const recommended = currentCase.resolutionOptions.find((o: any) => o.isRecommended)
-  const others = currentCase.resolutionOptions.filter((o: any) => !o.isRecommended)
+function ApprovalView({ currentCase, onApprove }: { currentCase: Case, onApprove: (id: string) => void }) {
+  const recommended = currentCase.resolutionOptions.find((o) => o.isRecommended)
+  const others = currentCase.resolutionOptions.filter((o) => !o.isRecommended)
   const isReplan = currentCase.stage === "AWAITING_REAPPROVAL"
+
+  if (!recommended) return null
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
@@ -190,7 +193,7 @@ function ApprovalView({ currentCase, onApprove }: { currentCase: any, onApprove:
 
               <div className="p-4 rounded-lg bg-[var(--color-surface)] border border-[var(--color-border-subtle)] text-sm mb-6">
                 <span className="text-[var(--color-text-secondary)]">Why this fits your goal: </span>
-                <span className="text-white">{currentCase.recommendation.reason}</span>
+                <span className="text-white">{currentCase.recommendation?.reason}</span>
               </div>
 
               <Button size="lg" className="w-full text-base" onClick={() => onApprove(recommended.id)}>
@@ -203,7 +206,7 @@ function ApprovalView({ currentCase, onApprove }: { currentCase: any, onApprove:
         <div className="space-y-6">
           <h2 className="text-xl font-semibold">Other Options</h2>
           <div className="space-y-4">
-            {others.map((opt: any) => (
+            {others.map((opt: ResolutionOption) => (
               <Card key={opt.id} className="bg-[var(--color-surface)] opacity-70 hover:opacity-100 transition-opacity">
                 <CardContent className="p-5">
                   <div className="flex justify-between items-center mb-2">
@@ -225,7 +228,7 @@ function ApprovalView({ currentCase, onApprove }: { currentCase: any, onApprove:
   )
 }
 
-function ExecutionView({ currentCase }: { currentCase: any }) {
+function ExecutionView({ currentCase }: { currentCase: Case }) {
   const latestAttempt = currentCase.attempts[currentCase.attempts.length - 1]
 
   return (
@@ -236,7 +239,7 @@ function ExecutionView({ currentCase }: { currentCase: any }) {
         </div>
         <CardContent className="p-6">
           <div className="space-y-6">
-            {currentCase.attempts.map((attempt: any, i: number) => (
+            {currentCase.attempts.map((attempt: Attempt, i: number) => (
               <div key={i} className="flex gap-4">
                 <div className="mt-1">
                   {attempt.status === "FAILED" ? (
@@ -268,7 +271,7 @@ function ExecutionView({ currentCase }: { currentCase: any }) {
   )
 }
 
-function MonitoringView({ currentCase, onVerify }: { currentCase: any, onVerify: (v: boolean) => void }) {
+function MonitoringView({ currentCase, onVerify }: { currentCase: Case, onVerify: (v: boolean) => void }) {
   const isAwaitingVerification = currentCase.stage === "AWAITING_VERIFICATION"
   
   return (
@@ -277,7 +280,7 @@ function MonitoringView({ currentCase, onVerify }: { currentCase: any, onVerify:
         <div>
           <h2 className="text-xl font-semibold mb-6">Monitoring Delivery</h2>
           <div className="relative pl-6 space-y-8 before:absolute before:inset-y-0 before:left-[11px] before:w-0.5 before:bg-[var(--color-border-strong)]">
-            {currentCase.monitoringEvents.map((evt: any, i: number) => {
+            {currentCase.monitoringEvents.map((evt: MonitoringEvent, i: number) => {
               const isLast = i === currentCase.monitoringEvents.length - 1
               return (
                 <div key={evt.id} className="relative">
@@ -325,7 +328,7 @@ function MonitoringView({ currentCase, onVerify }: { currentCase: any, onVerify:
   )
 }
 
-function ResolvedView({ currentCase }: { currentCase: any }) {
+function ResolvedView({ currentCase }: { currentCase: Case }) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl mx-auto text-center py-12">
       <div className="h-24 w-24 rounded-full bg-[var(--color-success)]/20 border border-[var(--color-success)]/30 flex items-center justify-center mx-auto mb-8">

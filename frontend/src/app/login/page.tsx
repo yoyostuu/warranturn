@@ -66,8 +66,8 @@ export default function LoginPage() {
           </Button>
         </form>
 
-        <p className="text-center text-sm text-[var(--color-text-muted)]">
-          Don't have an account?{" "}
+        <p className="text-sm text-[var(--color-text-secondary)]">
+          Don&apos;t have an account?{" "}
           <Link href="/signup" className="text-[var(--color-primary)] hover:underline">
             Sign up
           </Link>

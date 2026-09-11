@@ -1,10 +1,13 @@
 "use client"
 
+import { useMemo } from "react"
+
 import Link from "next/link"
 import { useStore } from "@/store"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useChatStore } from "@/store/chatStore"
 import { Package, Stethoscope, Clock, ShieldCheck, ChevronRight, Activity, ArrowRight } from "lucide-react"
 import { motion } from "framer-motion"
 
@@ -15,6 +18,9 @@ export default function DashboardPage() {
 
   const activeCases = cases.filter(c => !["RESOLVED", "DRAFT"].includes(c.stage))
   const needsApproval = cases.filter(c => ["AWAITING_APPROVAL", "AWAITING_REAPPROVAL", "AWAITING_VERIFICATION"].includes(c.stage))
+  const sessions = useChatStore(state => state.sessions)
+  const chatSessions = useMemo(() => Object.values(sessions), [sessions])
+  const activeChat = useMemo(() => chatSessions.find(s => s.currentStage !== "RESOLVED"), [chatSessions])
 
   return (
     <div className="space-y-8 pb-12">
@@ -24,7 +30,7 @@ export default function DashboardPage() {
           <p className="text-[var(--color-text-secondary)] mt-1">Here is your resolution overview.</p>
         </div>
         <Button asChild size="lg" className="shadow-lg shadow-[var(--color-primary)]/20">
-          <Link href="/cases/new">
+          <Link href="/">
             <Stethoscope className="mr-2 h-4 w-4" />
             Resolve an issue
           </Link>
@@ -78,6 +84,36 @@ export default function DashboardPage() {
             </Link>
           </div>
           
+          {activeChat && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
+              <Link href={`/resolve/${activeChat.sessionId}`} className="block">
+                <Card className="border-[var(--color-primary)] hover:border-[var(--color-primary)]/80 transition-colors bg-[var(--color-primary)]/5 shadow-[0_0_20px_-10px_rgba(59,130,246,0.3)]">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col sm:flex-row justify-between gap-4">
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant="outline" className="border-[var(--color-primary)]/50 text-[var(--color-primary)]">
+                            Active Session
+                          </Badge>
+                          <span className="text-xs text-[var(--color-text-muted)]">
+                            Stage: {activeChat.currentStage.replace(/_/g, ' ')}
+                          </span>
+                        </div>
+                        <h3 className="font-semibold text-lg">{activeChat.originalGoal || "Identifying issue..."}</h3>
+                        <p className="text-[var(--color-text-secondary)] text-sm mt-1 line-clamp-1">{activeChat.issueDescription || "Waiting for details"}</p>
+                      </div>
+                      <div className="flex items-center sm:items-start shrink-0">
+                        <Button variant="default" size="sm" className="w-full sm:w-auto shadow-md shadow-[var(--color-primary)]/20">
+                          Resume resolution <ArrowRight size={14} className="ml-2" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </Link>
+            </motion.div>
+          )}
+          
           {activeCases.length > 0 ? (
             <div className="space-y-4">
               {activeCases.map((c, i) => {
@@ -123,7 +159,7 @@ export default function DashboardPage() {
                <CardContent className="flex flex-col items-center justify-center py-12 text-center">
                  <ShieldCheck className="h-12 w-12 text-[var(--color-text-muted)] mb-4" />
                  <h3 className="text-lg font-medium text-white mb-2">No active cases</h3>
-                 <p className="text-[var(--color-text-secondary)] max-w-sm mb-6">You don't have any products currently undergoing resolution.</p>
+                 <p className="text-[var(--color-text-secondary)] max-w-sm mb-6">You don&apos;t have any products currently undergoing resolution.</p>
                  <Button asChild>
                    <Link href="/cases/new">Report an issue</Link>
                  </Button>

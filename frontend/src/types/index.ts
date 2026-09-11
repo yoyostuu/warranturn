@@ -1,5 +1,6 @@
 export type CaseStage =
   | "DRAFT"
+  | "COLLECTING_EVIDENCE"
   | "PROCESSING"
   | "AWAITING_APPROVAL"
   | "EXECUTING"
@@ -23,7 +24,7 @@ export interface Product {
 
 export interface EvidenceItem {
   id: string;
-  type: "INVOICE" | "PHOTO" | "OTHER";
+  type: "INVOICE" | "PHOTO" | "WARRANTY" | "ADDITIONAL" | "OTHER";
   fileUrl: string;
   name: string;
 }

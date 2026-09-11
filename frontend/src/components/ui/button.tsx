@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@/lib/utils";
 import { motion, HTMLMotionProps } from "framer-motion";
 
@@ -11,7 +12,8 @@ export interface ButtonProps extends HTMLMotionProps<"button"> {
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "default", size = "default", ...props }, ref) => {
+  ({ className, variant = "default", size = "default", asChild = false, ...props }, ref) => {
+    const Comp = asChild ? Slot : motion.button;
     
     const variants = {
       default: "bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-hover)] shadow-[inset_0_1px_0_rgba(255,255,255,0.2)]",
@@ -28,11 +30,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     };
 
     return (
-      <motion.button
+      // @ts-ignore: Radix Slot and framer-motion types are incompatible
+      <Comp
         ref={ref}
-        whileHover={{ scale: 1.01 }}
-        whileTap={{ scale: 0.98 }}
-        transition={{ type: "spring", stiffness: 400, damping: 25 }}
+        {...(!asChild ? {
+          whileHover: { scale: 1.01 },
+          whileTap: { scale: 0.98 },
+          transition: { type: "spring", stiffness: 400, damping: 25 }
+        } : {})}
         className={cn(
           "inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
           variants[variant],
