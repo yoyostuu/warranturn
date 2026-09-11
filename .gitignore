@@ -1,0 +1,73 @@
+# Dependencies
+/node_modules
+/.pnp
+.pnp.js
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Next.js & Production Builds
+/.next/
+/out/
+/build
+/dist
+
+# Environment variables & secrets (STRICT: Never commit actual keys)
+.env
+.env*.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+*.env.*
+!.env.example
+
+# Supabase
+.supabase/
+supabase/.temp/
+
+# Logs & Runtime data
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Diagnostic & Coverage
+coverage/
+*.lcov
+.nyc_output
+
+# Temporary files & caches
+.cache/
+.parcel-cache/
+.turbo/
+.eslintcache
+.stylelintcache
+*.tsbuildinfo
+next-env.d.ts
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE & Editor files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*~
